@@ -1,0 +1,4 @@
+uploader:
+  kind: Immich
+  url: "https://YOUR_IMMICH_URL/api"
+  api_key: "YOUR_API_KEY"

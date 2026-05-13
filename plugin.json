@@ -1,0 +1,16 @@
+{
+  "api_version": 1,
+  "name": "Immich Uploader",
+  "author": "R. Schlensog + AI Support / KI Unterstützung",
+  "flags": [
+    "debug"
+  ],
+  "publish": {
+    "tags": [
+      "screenshot",
+      "immich"
+    ],
+    "description": "Automatic screenshot uploader for the Steam Deck to an Immich instance",
+    "image": "https://immich.app/img/immich-logo.svg"
+  }
+}

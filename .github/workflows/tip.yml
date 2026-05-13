@@ -1,0 +1,102 @@
+name: Continuous master build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  clippy:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: backend/target/
+          key: cargo-clippy-cache
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2023-01-08
+          override: true
+          components: clippy
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --manifest-path backend/Cargo.toml
+
+  build_backend:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: |
+            backend/target/
+          key: cargo-build-cache
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2023-01-08
+          override: true
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release --manifest-path backend/Cargo.toml
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend
+          path: backend/target/release/deckshot
+
+  build_frontend:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7.24.3
+          run_install: true
+      - run: pnpm run build
+      - run: mv defaults/deckshot.yml .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: frontend
+          path: |
+            plugin.json
+            main.py
+            deckshot.yml
+            package.json
+            dist/
+            LICENSE
+
+  package:
+    runs-on: ubuntu-20.04
+    needs: [clippy, build_backend, build_frontend]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: backend
+          path: bin/
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: frontend
+      - run: |
+          mkdir deckshot
+          find . -mindepth 1 -maxdepth 1 -not -name deckshot | xargs mv -t deckshot/
+      - uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r deckshot.zip .
+      - name: Create release
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: tip
+          title: Development build
+          prerelease: true
+          files: deckshot.zip

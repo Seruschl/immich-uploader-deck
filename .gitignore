@@ -1,0 +1,55 @@
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.swp
+
+pids
+logs
+results
+tmp
+
+# Coverage reports
+coverage
+
+# API keys and secrets
+.env
+
+# Dependency directory
+node_modules
+bower_components
+/py_modules
+
+# Editors
+.idea
+*.iml
+
+# Rust
+backend/target/
+
+# Tools (Zig, etc.)
+tools/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Ignore built ts files
+dist/
+
+/.venv/
+__pycache__/
+
+/.yalc
+yalc.lock
+
+.vscode/settings.json
+
+# Ignore output folder
+
+backend/out
