@@ -1,6 +1,6 @@
 [package]
 name = "immichuploader"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["R. Schlensog + AI Support / KI Unterstützung"]
 description = "Automatic screenshot uploader for the Steam Deck (Immich Only)"
 license = "MIT"
